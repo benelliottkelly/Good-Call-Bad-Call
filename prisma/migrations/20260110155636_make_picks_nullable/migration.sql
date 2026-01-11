@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Pick" ALTER COLUMN "pickedWinner" DROP NOT NULL,
+ALTER COLUMN "pickedTDs" DROP NOT NULL;

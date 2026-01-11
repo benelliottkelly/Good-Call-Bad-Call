@@ -1,0 +1,130 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+////////////////////
+// USERS
+////////////////////
+
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  email     String   @unique
+  password  String   // hashed
+  name      String?
+  isAdmin   Boolean  @default(false)  // <-- admin flag
+
+  picks     Pick[]
+  sideBets  SideBet[]
+  scores    Score[]
+
+  createdAt DateTime @default(now())
+}
+
+
+////////////////////
+// WEEKS & GAMES
+////////////////////
+
+model Week {
+  id        Int      @id @default(autoincrement())
+  label     String   // "Wild Card", "Divisional", etc.
+  order     Int      // for tab ordering
+  multiplier Float    @default(1.0) // <-- NEW field
+
+  games     Game[]
+  scores    Score[]
+}
+
+model Game {
+  id        Int      @id @default(autoincrement())
+
+  week      Week     @relation(fields: [weekId], references: [id])
+  weekId    Int
+
+  teamA     String
+  teamB     String
+
+  // Admin-entered results
+  winner    String?  // teamA or teamB
+  totalTDs  Int?
+
+  picks     Pick[]
+  sideBets  SideBet[]
+  winningTeam String? 
+  correctTDs  Int?
+}
+
+////////////////////
+// USER PICKS (1 per game)
+////////////////////
+
+model Pick {
+  id        Int      @id @default(autoincrement())
+
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+
+  game      Game     @relation(fields: [gameId], references: [id])
+  gameId    Int
+
+  pickedWinner String?
+  pickedTDs    Int?
+
+  @@unique([userId, gameId]) // exactly one pick per user per game
+}
+
+////////////////////
+// SIDE BETS (0..n per game per user)
+////////////////////
+
+enum BetResult {
+  UNMARKED
+  CORRECT
+  INCORRECT
+}
+
+model SideBet {
+  id        Int       @id @default(autoincrement())
+
+  user      User      @relation(fields: [userId], references: [id])
+  userId    Int
+
+  game      Game      @relation(fields: [gameId], references: [id])
+  gameId    Int
+
+  description String  // free text
+  odds        Float
+  result      BetResult @default(UNMARKED)
+
+  createdAt  DateTime @default(now())
+}
+
+////////////////////
+// SCORING
+////////////////////
+
+model Score {
+  id        Int      @id @default(autoincrement())
+
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+
+  week      Week     @relation(fields: [weekId], references: [id])
+  weekId    Int
+
+  points    Int
+
+  @@unique([userId, weekId])
+}

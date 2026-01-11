@@ -1,3 +1,6 @@
+# Good Call Bad Call
+Please note this project is a work in progress. I created it in less that 2 days so that me and my friends could have a fun competition during the 2026 NFL playoffs.
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
