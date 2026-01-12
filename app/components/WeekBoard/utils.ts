@@ -18,21 +18,20 @@ export function formatOdds(decimalOdds: number, format: OddsFormat): string {
  */
 export function parseOddsInput(input: string, format: OddsFormat): number {
   const trimmed = input.trim().replace("+", "");
-  if (!trimmed) return 2; // default min
+  if (!trimmed) return NaN;
 
   if (format === "AMERICAN") {
     const n = parseFloat(trimmed);
-    if (isNaN(n)) return 2;
+    if (isNaN(n)) return NaN;
     return n >= 0 ? 1 + n / 100 : 1 - 100 / n;
   } else {
     const parts = trimmed.split("/");
     if (parts.length === 2) {
       const num = parseFloat(parts[0]);
       const denom = parseFloat(parts[1]);
-      if (isNaN(num) || isNaN(denom) || denom === 0) return 2;
+      if (isNaN(num) || isNaN(denom) || denom === 0) return NaN;
       return 1 + num / denom;
     }
-    const n = parseFloat(trimmed);
-    return isNaN(n) ? 2 : 1 + n;
+    return NaN
   }
 }

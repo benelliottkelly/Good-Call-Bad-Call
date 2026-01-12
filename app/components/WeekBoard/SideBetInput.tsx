@@ -20,8 +20,8 @@ export default function SideBetInput({ gameId, userId, onAdd, oddsFormat }: Side
 
     const decimalOdds = parseOddsInput(oddsInput, oddsFormat);
 
-    if (decimalOdds < 1.01) {
-      setError("Invalid odds");
+    if (!Number.isFinite(decimalOdds) ||decimalOdds < 2) {
+      setError("Odds must be evens or better");
       return;
     }
 

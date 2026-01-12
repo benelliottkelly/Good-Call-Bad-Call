@@ -21,7 +21,7 @@ export default function WeekBoard({
     const initialIndex = weeks.findIndex((w) => w.id === activeWeekId) ?? 0;
     const [weekIndex, setWeekIndex] = useState(initialIndex);
     const [weekData, setWeekData] = useState(weeks);
-    const [oddsFormat, setOddsFormat] = useState<OddsFormat>("AMERICAN");
+    const [oddsFormat, setOddsFormat] = useState<OddsFormat>("FRACTIONAL");
 
     const week = weekData[weekIndex];
     if (!week) return <div>No weeks available yet.</div>;
@@ -184,7 +184,10 @@ export default function WeekBoard({
                     </button>
                 </div>
                 <div>
-                    <label className="mr-2 font-semibold">Odds:</label>
+                    <label className="mr-3 font-semibold">This Weeks' Multiplier: x{week.multiplier}</label>
+                </div>
+                <div>
+                    <label className="mr-2 font-semibold">Odds Type:</label>
                     <select
                         value={oddsFormat}
                         onChange={(e) => setOddsFormat(e.target.value as OddsFormat)}
