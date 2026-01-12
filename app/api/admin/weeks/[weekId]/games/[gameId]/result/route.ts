@@ -1,15 +1,18 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { verifyToken } from "@/lib/jwt";
 
 export async function PATCH(
-  req: Request,
-  { params }: { params: { weekId: string; gameId: string } }
+  req: NextRequest,
+  { params }: { params: Promise<{ weekId: string; gameId: string }> }
 ) {
-    const cookieStore = await cookies();
-    const token = cookieStore.get("token")?.value;
-    const user = token ? verifyToken(token) : null;
+
+  const { weekId, gameId } = await params;
+
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value;
+  const user = token ? verifyToken(token) : null;
 
   if (!user || !user.isAdmin) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -24,12 +27,10 @@ export async function PATCH(
     );
   }
 
-  const gameId = Number(params.gameId);
-
   try {
     // Update official result
     const updatedGame = await prisma.game.update({
-      where: { id: gameId },
+      where: { id: Number(gameId) },
       data: { winner, totalTDs },
       include: { picks: true, sideBets: true },
     });

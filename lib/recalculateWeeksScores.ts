@@ -1,8 +1,9 @@
 import { prisma } from "@/lib/prisma";
 
-export async function recalculateWeeksScores(weekId: number) {
+export async function recalculateWeeksScores(weekId: string) {
+  const id = Number(weekId);
   const week = await prisma.week.findUnique({
-    where: { id: weekId },
+    where: { id: id },
     include: {
       games: {
         include: {
@@ -45,9 +46,9 @@ export async function recalculateWeeksScores(weekId: number) {
       let sbPoints = 0;
 
       if (sb.result === "CORRECT") {
-        sbPoints = sb.odds * multiplier;
+        sbPoints = (sb.odds * multiplier) - 1;
       } else if (sb.result === "INCORRECT") {
-        sbPoints = -sb.odds * multiplier;
+        sbPoints = -1 * multiplier;
       }
 
       scores[sb.userId] = (scores[sb.userId] ?? 0) + sbPoints;
@@ -59,13 +60,13 @@ export async function recalculateWeeksScores(weekId: number) {
       where: {
         userId_weekId: {
           userId: Number(userIdStr),
-          weekId,
+          weekId: id,
         },
       },
       update: { points },
       create: {
         userId: Number(userIdStr),
-        weekId,
+        weekId: id,
         points,
       },
     });

@@ -14,11 +14,11 @@ async function getAdminUser(req: NextRequest) {
   return null;
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: { userId: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ userId: string }> }) {
   const admin = await getAdminUser(req);
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
 
-  const userId = Number(params.userId);
+  const userId = Number((await params).userId);
   if (userId === admin.id) {
     return NextResponse.json({ error: "Cannot delete yourself" }, { status: 400 });
   }

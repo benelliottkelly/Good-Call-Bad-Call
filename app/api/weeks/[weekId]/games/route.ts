@@ -1,12 +1,12 @@
 // app/api/weeks/[weekId]/games/route.ts
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
 export async function GET(
-  _req: Request,
-  { params }: { params: { weekId: string } }
+  _req: NextRequest,
+  { params }: { params: Promise<{ weekId: string }> }
 ) {
-  const weekId = Number(params.weekId);
+  const weekId = Number((await params).weekId);
   if (isNaN(weekId)) {
     return NextResponse.json({ error: 'Invalid weekId' }, { status: 400 });
   }

@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
     },
   });
 
-  await recalculateWeeksScores(sideBet.game.weekId);
+  await recalculateWeeksScores(String(sideBet.game.weekId));
 
   return NextResponse.json({ success: true });
 }

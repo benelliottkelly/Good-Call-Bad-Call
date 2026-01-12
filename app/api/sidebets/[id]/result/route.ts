@@ -1,14 +1,14 @@
 // app/api/sidebets/[id]/result/route.ts
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { recalculateWeeksScores } from '@/lib/recalculateWeeksScores';
 
 export async function PATCH(
-  req: Request,
-  context: { params: { id: string } }
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> } 
 ) {
   // Unwrap params correctly
-  const { id } = await context.params;
+  const { id } = await params;
   const sideBetId = Number(id);
 
   if (isNaN(sideBetId)) {
@@ -33,7 +33,7 @@ export async function PATCH(
     return NextResponse.json({ error: "Game not found for this sideBet" }, { status: 404 });
   }
 
-  await recalculateWeeksScores(game.weekId);
+  await recalculateWeeksScores(String(game.weekId));
 
   // Fetch the updated week scores to send back
   const scores = await prisma.score.findMany({

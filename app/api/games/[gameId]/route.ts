@@ -1,9 +1,9 @@
 // app/api/games/[gameId]/route.ts
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-export async function PATCH(req: Request, { params }: { params: { gameId: string } }) {
-  const gameId = Number(params.gameId);
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ gameId: string }> }) {
+  const gameId = Number((await params).gameId);
   if (isNaN(gameId)) return NextResponse.json({ error: 'Invalid gameId' }, { status: 400 });
 
   const { teamA, teamB } = await req.json();
