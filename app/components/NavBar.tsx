@@ -5,16 +5,17 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useUser } from "@/app/context/UserContext";
 
-function NavLink({ href, children }: { href: string; children: React.ReactNode }) {
+function NavLink({ href, children, onClick }: { href: string; children: React.ReactNode, onClick?: () => void }) {
     const pathname = usePathname();
     const isActive = pathname === href;
 
     return (
         <Link
             href={href}
+            onClick={onClick}
             className={`px-2 py-1 rounded ${isActive
-                    ? "bg-gray-700 text-white"
-                    : "text-gray-200 hover:bg-gray-700 hover:text-white dark:text-gray-300 dark:hover:bg-gray-700"
+                ? "bg-gray-700 text-white"
+                : "text-gray-200 hover:bg-gray-700 hover:text-white dark:text-gray-300 dark:hover:bg-gray-700"
                 }`}
         >
             {children}
@@ -41,7 +42,7 @@ export default function NavBar() {
     };
 
     return (
-        <nav className="bg-gray-800 text-white p-4">
+        <nav className="relative bg-gray-800 text-white p-4">
             <div className="flex justify-between items-center">
                 <NavLink href="/">Home</NavLink>
 
@@ -78,7 +79,7 @@ export default function NavBar() {
                         </>
                     ) : (
                         <>
-                        <NavLink href="/leaderboard">Leaderboard</NavLink>
+                            <NavLink href="/leaderboard">Leaderboard</NavLink>
                             <NavLink href="/login">Login</NavLink>
                             <NavLink href="/register">Register</NavLink>
                         </>
@@ -87,7 +88,7 @@ export default function NavBar() {
             </div>
 
             {menuOpen && (
-                <div className="flex flex-col gap-2 mt-3 md:hidden">
+                <div className="absolute top-full right-0 z-50 bg-gray-800 text-white shadow-md rounded mt-1 w-48 md:hidden flex flex-col gap-2 p-2">
                     {currentUser ? (
                         <>
                             <span className="font-semibold">{currentUser.username}</span>
@@ -104,7 +105,10 @@ export default function NavBar() {
                             )}
 
                             <button
-                                onClick={handleLogout}
+                                onClick={() => {
+                                    handleLogout();
+                                    setMenuOpen(false);
+                                }}
                                 className="bg-red-500 px-2 py-1 rounded hover:bg-red-600 text-left"
                             >
                                 Logout
@@ -112,10 +116,9 @@ export default function NavBar() {
                         </>
                     ) : (
                         <>
-                        <NavLink href="/leaderboard">Leaderboard</NavLink>
-
-                            <NavLink href="/login">Login</NavLink>
-                            <NavLink href="/register">Register</NavLink>
+                            <NavLink href="/leaderboard" onClick={() => setMenuOpen(false)}>Leaderboard</NavLink>
+                            <NavLink href="/login" onClick={() => setMenuOpen(false)}>Login</NavLink>
+                            <NavLink href="/register" onClick={() => setMenuOpen(false)}>Register</NavLink>
                         </>
                     )}
                 </div>
