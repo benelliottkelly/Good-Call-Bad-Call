@@ -258,10 +258,10 @@ export default function WeekBoard({
             </div>
 
             {/* Week Table */}
-            <div className="max-h-[80vh] overflow-y-auto">
-                <table className="table-fixed border-collapse border w-full min-w-[700px]">
+            <div className="max-h-[80vh] overflow-y-auto overflow-x-auto mt-2">
+                <table className="table-auto border-collapse border w-full min-w-[700px]">
                     <colgroup>
-                        <col style={{ minWidth: "200px" }} />
+                        <col style={{ minWidth: "150px" }} />
                         {orderedUsers.map((u) => (
                             <col key={u.userId} className="min-w-[120px] sm:min-w-[140px]" />
                         ))}
@@ -278,6 +278,9 @@ export default function WeekBoard({
                             {orderedUsers.map((u) => (
                                 <th
                                     key={u.userId}
+                                    style={{
+                                        width: u.userId === currentUser?.userId ? "300px" : "200px",
+                                    }}
                                     className="sticky top-0 z-20 bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-gray-100 p-2 text-center break-words"
                                 >
                                     {u.username} ({u.weeklyScore})
