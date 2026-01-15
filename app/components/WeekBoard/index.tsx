@@ -259,38 +259,42 @@ export default function WeekBoard({
 
             {/* Week Table */}
             <div className="max-h-[80vh] overflow-y-auto">
-                <table className="table-fixed border-collapse border w-full min-w-[600px]">
+                <table className="table-fixed border-collapse border w-full min-w-[700px]">
+                    <colgroup>
+                        <col className="w-36" />
+                        {orderedUsers.map((u) => (
+                            <col key={u.userId} className="min-w-[120px] sm:min-w-[140px]" />
+                        ))}
+                    </colgroup>
+
                     <thead>
                         <tr>
-                            <th className="sticky top-0 z-20 bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-gray-100 p-2 w-36">
+                            {/* Game Column */}
+                            <th className="sticky top-0 z-20 bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-gray-100 p-2">
                                 Game
                             </th>
 
                             {/* User Columns */}
-                            {orderedUsers.map((u) => {
-                                return (
-                                    <th
-                                        key={u.userId}
-                                        className={`
-                                            sticky top-0 z-20 bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-gray-100
-                                            p-2 min-w-0 text-center align-top
-                                            break-words
-                                            "min-w-[100px] sm:min-w-[120px] md:min-w-[140px]"}
-                                            `}
-                                    >
-                                        {u.username} ({u.weeklyScore})
-                                    </th>
-                                );
-                            })}
+                            {orderedUsers.map((u) => (
+                                <th
+                                    key={u.userId}
+                                    className="sticky top-0 z-20 bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-gray-100 p-2 text-center break-words"
+                                >
+                                    {u.username} ({u.weeklyScore})
+                                </th>
+                            ))}
                         </tr>
                     </thead>
+
                     <tbody>
                         {week.games.map((game) => (
                             <tr key={game.id}>
+                                {/* Game Column */}
                                 <td className="border p-2 align-top">
                                     <strong>{game.teamA}</strong> vs <strong>{game.teamB}</strong>
                                 </td>
 
+                                {/* User Columns */}
                                 {orderedUsers.map((u) => (
                                     <WeekRow
                                         key={u.userId}
