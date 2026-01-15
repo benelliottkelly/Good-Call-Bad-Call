@@ -38,14 +38,34 @@ thead.sticky {
     0 0 10px currentColor,
     0 0 20px currentColor,
     0 0 40px currentColor;
+  transition: color 0.1s, text-shadow 0.1s;
 }
 
-/* Flicker animation */
-@keyframes flicker {
-  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; }
-  20%, 22%, 24%, 55% { opacity: 0.2; }
+/* Organic flicker animation */
+@keyframes neon-flicker {
+  0%, 18%, 22%, 25%, 53%, 57%, 100% {
+    opacity: 1;
+    text-shadow:
+      0 0 5px currentColor,
+      0 0 10px currentColor,
+      0 0 20px currentColor,
+      0 0 40px currentColor;
+  }
+  20%, 24%, 55% {
+    opacity: 0.2;
+    text-shadow: 0 0 2px currentColor;
+  }
+  10%, 30%, 50% {
+    opacity: 0.6;
+    text-shadow:
+      0 0 3px currentColor,
+      0 0 6px currentColor,
+      0 0 12px currentColor,
+      0 0 25px currentColor;
+  }
 }
 
+/* Apply flicker */
 .animate-neon-flicker {
-  animation: flicker 2s infinite;
+  animation: neon-flicker 2s infinite;
 }
