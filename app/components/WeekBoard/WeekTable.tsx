@@ -6,11 +6,9 @@ import { Week, User, BetResult } from "./types";
 
 interface WeekTableProps {
     weekData: Week[];
-    // setWeekData: any;
     weekIndex: number;
     setWeekData: React.Dispatch<React.SetStateAction<Week[]>>;
     setWeekIndex: React.Dispatch<React.SetStateAction<number>>;
-    // setWeekIndex: any;
     users: User[];
     currentUser: User | null;
     oddsFormat: OddsFormat;
@@ -27,6 +25,15 @@ interface WeekTableProps {
         description: string,
         odds: number
     ) => void;
+    handleUpdateSideBetResult: (
+        sideBetId: number,
+        result: BetResult
+    ) => void;
+    handleUpdateSideBet: (
+        sideBetId: number,
+        description: string,
+        odds: number
+    ) => void;
 }
 
 export default function WeekTable({
@@ -40,6 +47,8 @@ export default function WeekTable({
     setOddsFormat,
     handlePickChange,
     handleAddSideBet,
+    handleUpdateSideBetResult,
+    handleUpdateSideBet
 }: WeekTableProps) {
     const week = weekData[weekIndex];
     if (!week) return <div>No weeks available</div>;
@@ -72,51 +81,6 @@ export default function WeekTable({
             isAdmin: u.isAdmin,
             weeklyScore: week.scores.find((s) => s.userId === u.userId)?.points ?? 0,
         }));
-
-    const handleUpdateSideBet = async (
-        sideBetId: number,
-        result: BetResult
-    ) => {
-        // Optimistic update
-        setWeekData((prev: any[]) =>
-            prev.map((w) =>
-                w.id !== week.id
-                    ? w
-                    : {
-                        ...w,
-                        games: w.games.map((g: { sideBets: any[]; }) => ({
-                            ...g,
-                            sideBets: g.sideBets.map((sb) =>
-                                sb.id === sideBetId ? { ...sb, result } : sb
-                            ),
-                        })),
-                    }
-            )
-        );
-
-        console.log({ sideBetId, result });
-
-        // Persist to server
-        await fetch("/api/admin/sidebet", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ sideBetId, result }),
-        });
-
-        // Refresh scores + week data
-        await refetchWeek();
-    };
-
-    const refetchWeek = async () => {
-        const res = await fetch(`/api/week/${week.id}`);
-        if (!res.ok) return;
-        const updatedWeek = await res.json();
-
-        setWeekData((prev: any[]) =>
-            prev.map((w) => (w.id === week.id ? updatedWeek : w))
-        );
-    };
-
 
     return (
         <div className="overflow-x-auto p-4">
@@ -187,6 +151,7 @@ export default function WeekTable({
                                     oddsFormat={oddsFormat}
                                     onPickChange={handlePickChange}
                                     onAddSideBet={handleAddSideBet}
+                                    onSetSideBetResult={handleUpdateSideBetResult}
                                     onUpdateSideBet={handleUpdateSideBet}
                                 />
                             ))}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import WeekRow from "./WeekRow";
 import { Week, User, Pick, SideBet, BetResult } from "./types";
 import { OddsFormat } from "./utils";
@@ -133,7 +133,7 @@ export default function WeekBoard({
     };
 
     // ---------------- Mark Side Bet Result ----------------
-    const handleMarkSideBet = async (sideBetId: number, result: BetResult) => {
+    const handleChangeSideBetResult = async (sideBetId: number, result: BetResult) => {
         if (!isAdmin) return;
 
         const res = await fetch(`/api/sidebets/${sideBetId}/result`, {
@@ -142,8 +142,44 @@ export default function WeekBoard({
             body: JSON.stringify({ result }),
         });
         if (!res.ok) return;
-        // const updated: SideBet = await res.json();
         const { updated, scores } = await res.json();
+        setWeekData((prev) =>
+            prev.map((w) =>
+                w.id !== week.id
+                    ? w
+                    : {
+                        ...w,
+                        scores,
+                        games: w.games.map((g) => ({
+                            ...g,
+                            sideBets: (g.sideBets ?? [])
+                                .filter(Boolean) // remove any stray undefineds
+                                .map((sb) => (sb.id === sideBetId ? updated : sb)),
+                        })),
+                    }
+            )
+        );
+    };
+
+    // ---------------- Update Side Bet ----------------
+    const handleUpdateSideBet = async (
+        sideBetId: number,
+        description: string,
+        odds: number
+    ) => {
+
+        if (!isAdmin) return;
+
+        const clampedOdds = Math.max(odds, 2.0);
+
+        const res = await fetch(`/api/admin/sidebet/${sideBetId}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ description, odds: clampedOdds }),
+        });
+        if (!res.ok) return;
+        const { updated, scores } = await res.json();
+
         setWeekData((prev) =>
             prev.map((w) =>
                 w.id !== week.id
@@ -228,7 +264,8 @@ export default function WeekBoard({
                                     oddsFormat={oddsFormat}
                                     onPickChange={handlePickChange}
                                     onAddSideBet={handleAddSideBet}
-                                    onUpdateSideBet={handleMarkSideBet}
+                                    onSetSideBetResult={handleChangeSideBetResult}
+                                    onUpdateSideBet={handleUpdateSideBet}
                                 />
                             ))}
                         </tr>

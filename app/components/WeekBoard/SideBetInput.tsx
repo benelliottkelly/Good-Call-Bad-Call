@@ -1,56 +1,124 @@
 "use client";
 
-import { useState } from "react";
-import { OddsFormat, parseOddsInput } from "./utils";
+import { useEffect, useState } from "react";
+import { formatOdds, OddsFormat, parseOddsInput } from "./utils";
 
-interface SideBetInputProps {
+type AddSideBetProps = {
+  mode: "add";
   gameId: number;
   userId: number;
-  onAdd: (gameId: number, userId: number, description: string, odds: number) => void;
-  oddsFormat: OddsFormat;
-}
+  onAdd: (
+    gameId: number,
+    userId: number,
+    description: string,
+    odds: number
+  ) => void;
+};
 
-export default function SideBetInput({ gameId, userId, onAdd, oddsFormat }: SideBetInputProps) {
-  const [description, setDescription] = useState("");
-  const [oddsInput, setOddsInput] = useState("");
+type EditSideBetProps = {
+  mode: "edit";
+  sideBetId: number;
+  initialDescription: string;
+  initialOdds: number;
+  onUpdate: (
+    sideBetId: number,
+    description: string,
+    odds: number
+  ) => Promise<void> | void;
+  onCancel: () => void;
+};
+
+export type SideBetInputProps = {
+  oddsFormat: OddsFormat;
+  autoFocus?: boolean;
+} & (AddSideBetProps | EditSideBetProps);
+
+
+export default function SideBetInput(props: SideBetInputProps) {
+  const { oddsFormat, autoFocus } = props;
+  const isEditMode = props.mode === "edit";
+
+  const [description, setDescription] = useState(
+    isEditMode ? props.initialDescription : "");
+  const [oddsInput, setOddsInput] = useState(
+    isEditMode ? String(props.initialOdds) : "");
   const [error, setError] = useState("");
 
-  const handleAdd = () => {
+  const handleSubmit = async () => {
     if (!description.trim()) return;
 
     const decimalOdds = parseOddsInput(oddsInput, oddsFormat);
 
-    if (!Number.isFinite(decimalOdds) ||decimalOdds < 2) {
+    if (!Number.isFinite(decimalOdds) || decimalOdds < 2) {
       setError("Odds must be evens or better");
       return;
     }
 
-    onAdd(gameId, userId, description.trim(), decimalOdds);
+    if (isEditMode) {
+      try {
+        await props.onUpdate(props.sideBetId, description.trim(), decimalOdds);
+      } catch (err) {
+        setError("Failed to update side bet");
+        console.log(err);
+        return;
+      }
+    } else {
+      props.onAdd(
+        props.gameId,
+        props.userId,
+        description.trim(),
+        decimalOdds
+      );
+      setDescription("");
+      setOddsInput("");
+    }
 
-    setDescription("");
-    setOddsInput("");
     setError("");
   };
+
+  useEffect(() => {
+    if (props.mode === "edit") {
+      setOddsInput(formatOdds(props.initialOdds, oddsFormat));
+    }
+  // Only include dependencies when in edit mode
+}, [props.mode, oddsFormat, ...(props.mode === "edit" ? [props.initialOdds] : [])]);
 
   return (
     <div className="flex flex-col gap-1 mt-1">
       <div className="flex gap-1">
         <input
+          autoFocus={autoFocus}
           className="border p-1 flex-1"
           placeholder="Side bet"
           value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          onChange={e => setDescription(e.target.value)}
         />
+
         <input
           className="border p-1 w-20"
           placeholder={oddsFormat === "AMERICAN" ? "+100" : "1/1"}
           value={oddsInput}
-          onChange={(e) => setOddsInput(e.target.value)}
+          onChange={e => setOddsInput(e.target.value)}
         />
-        <button className="bg-blue-500 text-white px-2" onClick={handleAdd}>
-          +
+
+        <button
+          className={`px-2 text-white ${isEditMode ? "bg-green-600" : "bg-blue-500"
+            }`}
+          onClick={handleSubmit}
+        >
+          {isEditMode ? "💾" : "+"}
         </button>
+
+        {isEditMode && (
+          <button
+            className="px-2 bg-gray-300"
+            onClick={props.onCancel}
+          >
+            ↩️
+          </button>
+        )}
       </div>
+
       {error && <span className="text-red-500 text-sm">{error}</span>}
     </div>
   );
