@@ -80,46 +80,43 @@ export default function SideBetInput(props: SideBetInputProps) {
     if (props.mode === "edit") {
       setOddsInput(formatOdds(props.initialOdds, oddsFormat));
     }
-  // Only include dependencies when in edit mode
-}, [props.mode, oddsFormat, ...(props.mode === "edit" ? [props.initialOdds] : [])]);
+    // Only include dependencies when in edit mode
+  }, [props.mode, oddsFormat, ...(props.mode === "edit" ? [props.initialOdds] : [])]);
 
   return (
-    <div className="flex flex-col gap-1 mt-1">
-      <div className="flex gap-1">
+    <div className="flex flex-col gap-1 mt-1 min-w-0">
+      <div className="flex gap-1 min-w-0">
         <input
           autoFocus={autoFocus}
-          className="border p-1 flex-1"
+          className="border p-1 flex-1 min-w-0"
           placeholder="Side bet"
           value={description}
           onChange={e => setDescription(e.target.value)}
         />
 
         <input
-          className="border p-1 w-20"
+          className="border p-1 w-10 sm:w-20 flex-shrink"
           placeholder={oddsFormat === "AMERICAN" ? "+100" : "1/1"}
           value={oddsInput}
           onChange={e => setOddsInput(e.target.value)}
         />
 
         <button
-          className={`px-2 text-white ${isEditMode ? "bg-green-600" : "bg-blue-500"
-            }`}
+          className={`px-2 text-white flex-shrink-0 ${isEditMode ? "bg-green-600" : "bg-blue-500"}`}
           onClick={handleSubmit}
         >
           {isEditMode ? "💾" : "+"}
         </button>
 
         {isEditMode && (
-          <button
-            className="px-2 bg-gray-300"
-            onClick={props.onCancel}
-          >
+          <button className="px-2 bg-gray-300 flex-shrink-0" onClick={props.onCancel}>
             ↩️
           </button>
         )}
       </div>
 
-      {error && <span className="text-red-500 text-sm">{error}</span>}
+      {error && <span className="text-red-500 text-sm break-words">{error}</span>}
     </div>
+
   );
 }
