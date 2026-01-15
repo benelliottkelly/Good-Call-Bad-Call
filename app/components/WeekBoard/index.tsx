@@ -199,79 +199,117 @@ export default function WeekBoard({
     };
 
     return (
-        <div className="overflow-x-auto p-4">
+        <div className="overflow-x-auto p-2">
             {/* Week Navigation + Odds Toggle */}
-            <div className="flex items-center justify-between mb-4 sticky top-0 bg-white dark:bg-gray-800 z-20 p-2 border-b">
-                <div className="flex items-center gap-4">
-                    <button
-                        disabled={weekIndex === 0}
-                        onClick={() => setWeekIndex((i) => i - 1)}
-                        className="px-2 py-1 border rounded"
-                    >
-                        ← Previous
-                    </button>
-                    <h2 className="text-xl font-bold">{week.label}</h2>
-                    <button
-                        disabled={weekIndex === weekData.length - 1}
-                        onClick={() => setWeekIndex((i) => i + 1)}
-                        className="px-2 py-1 border rounded"
-                    >
-                        Next →
-                    </button>
-                </div>
-                <div>
-                    <label className="mr-3 font-semibold">This Weeks' Multiplier: x{week.multiplier}</label>
-                </div>
-                <div>
-                    <label className="mr-2 font-semibold">Odds Type:</label>
-                    <select
-                        value={oddsFormat}
-                        onChange={(e) => setOddsFormat(e.target.value as OddsFormat)}
-                        className="border p-1 rounded"
-                    >
-                        <option value="AMERICAN">American</option>
-                        <option value="FRACTIONAL">Fractional</option>
-                    </select>
+            <div className="sticky top-0 z-20 bg-white dark:bg-gray-800 border-b border-gray-300 dark:border-gray-700 px-2 py-2">
+                <div className="flex items-center justify-between gap-2">
+
+                    {/* Navigation */}
+                    <div className="flex-[2_1_0] flex items-center justify-center min-w-0 gap-1">
+                        {/* Left arrow */}
+                        <button
+                            disabled={weekIndex === 0}
+                            onClick={() => setWeekIndex((i) => i - 1)}
+                            className="flex-shrink-0 px-1 sm:px-2 py-1 border rounded text-xs sm:text-sm md:text-base"
+                        >
+                            <span className="mr-1">←</span>
+                            <span className="hidden sm:inline">Previous Week</span>
+                        </button>
+
+                        {/* Week Label */}
+                        <h2 className="mx-2 text-center font-bold text-xs sm:text-sm md:text-base whitespace-normal break-words px-1">
+                            {week.label}
+                        </h2>
+
+                        {/* Right arrow */}
+                        <button
+                            disabled={weekIndex === weekData.length - 1}
+                            onClick={() => setWeekIndex((i) => i + 1)}
+                            className="flex-shrink-0 px-1 sm:px-2 py-1 border rounded text-xs sm:text-sm md:text-base"
+                        >
+                            <span className="hidden sm:inline">Next Week</span>
+                            <span className="ml-1">→</span>
+                        </button>
+                    </div>
+
+                    {/* Multiplier */}
+                    <div className="flex-[1_1_0] text-center text-xs sm:text-sm md:text-base break-words min-w-0 px-1">
+                        {/* Small screens */}
+                        <span className="sm:hidden">Multiplier: x{week.multiplier}</span>
+
+                        {/* Medium and up */}
+                        <span className="hidden sm:inline">This Week's Multiplier: x{week.multiplier}</span>
+                    </div>
+
+                    {/* Odds Toggle */}
+                    <div className="justify-end flex-[1_1_0] flex flex-wrap items-center gap-1 text-xs sm:text-sm md:text-base min-w-0 px-1">
+                        <label className="whitespace-nowrap">Odds Type:</label>
+                        <select
+                            value={oddsFormat}
+                            onChange={(e) => setOddsFormat(e.target.value as OddsFormat)}
+                            className="border p-1 rounded text-xs sm:text-sm md:text-base"
+                        >
+                            <option value="AMERICAN">American</option>
+                            <option value="FRACTIONAL">Fractional</option>
+                        </select>
+                    </div>
+
                 </div>
             </div>
 
             {/* Week Table */}
-            <table className="table-auto border-collapse border w-full">
-                <thead className="sticky top-12 z-10 bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-gray-100">
-                    <tr>
-                        <th className="border p-2">Game</th>
-                        {orderedUsers.map((u) => (
-                            <th key={u.userId} className="border p-2">
-                                {u.username} ({u.weeklyScore})
+            <div className="max-h-[80vh] overflow-y-auto">
+                <table className="table-fixed border-collapse border w-full min-w-[600px]">
+                    <thead>
+                        <tr>
+                            <th className="sticky top-0 z-20 bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-gray-100 p-2 w-36">
+                                Game
                             </th>
-                        ))}
-                    </tr>
-                </thead>
-                <tbody>
-                    {week.games.map((game) => (
-                        <tr key={game.id}>
-                            <td className="border p-2 align-top">
-                                <strong>{game.teamA}</strong> vs <strong>{game.teamB}</strong>
-                            </td>
 
-                            {orderedUsers.map((u) => (
-                                <WeekRow
-                                    key={u.userId}
-                                    game={game}
-                                    user={u}
-                                    currentUserId={currentUser?.userId ?? 0}
-                                    isAdmin={isAdmin}
-                                    oddsFormat={oddsFormat}
-                                    onPickChange={handlePickChange}
-                                    onAddSideBet={handleAddSideBet}
-                                    onSetSideBetResult={handleChangeSideBetResult}
-                                    onUpdateSideBet={handleUpdateSideBet}
-                                />
-                            ))}
+                            {/* User Columns */}
+                            {orderedUsers.map((u) => {
+                                return (
+                                    <th
+                                        key={u.userId}
+                                        className={`
+                                            sticky top-0 z-20 bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-gray-100
+                                            p-2 min-w-0 text-center align-top
+                                            break-words
+                                            "min-w-[100px] sm:min-w-[120px] md:min-w-[140px]"}
+                                            `}
+                                    >
+                                        {u.username} ({u.weeklyScore})
+                                    </th>
+                                );
+                            })}
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {week.games.map((game) => (
+                            <tr key={game.id}>
+                                <td className="border p-2 align-top">
+                                    <strong>{game.teamA}</strong> vs <strong>{game.teamB}</strong>
+                                </td>
+
+                                {orderedUsers.map((u) => (
+                                    <WeekRow
+                                        key={u.userId}
+                                        game={game}
+                                        user={u}
+                                        currentUserId={currentUser?.userId ?? 0}
+                                        isAdmin={isAdmin}
+                                        oddsFormat={oddsFormat}
+                                        onPickChange={handlePickChange}
+                                        onAddSideBet={handleAddSideBet}
+                                        onSetSideBetResult={handleChangeSideBetResult}
+                                        onUpdateSideBet={handleUpdateSideBet}
+                                    />
+                                ))}
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
         </div>
     );
 }
