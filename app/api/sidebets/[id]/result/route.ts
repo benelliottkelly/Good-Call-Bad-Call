@@ -5,9 +5,8 @@ import { recalculateWeeksScores } from '@/lib/recalculateWeeksScores';
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> } 
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  // Unwrap params correctly
   const { id } = await params;
   const sideBetId = Number(id);
 
@@ -15,7 +14,7 @@ export async function PATCH(
     return NextResponse.json({ error: "Invalid sideBet ID" }, { status: 400 });
   }
 
-  const { result } = await req.json(); // result: 'CORRECT' | 'INCORRECT'
+  const { result } = await req.json(); // result: 'CORRECT' | 'INCORRECT' | 'UNMARKED'
 
   // Update the sideBet
   const updatedSideBet = await prisma.sideBet.update({
@@ -42,5 +41,5 @@ export async function PATCH(
   });
 
   // Return only what the front end needs: updated sideBet + updated scores
-  return NextResponse.json({ updated: updatedSideBet, scores });
+  return NextResponse.json({ updated: updatedSideBet, scores: scores });
 }
