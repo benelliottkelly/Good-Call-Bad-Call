@@ -261,7 +261,7 @@ export default function WeekBoard({
             <div className="max-h-[80vh] overflow-y-auto">
                 <table className="table-fixed border-collapse border w-full min-w-[700px]">
                     <colgroup>
-                        <col className="w-36" />
+                        <col style={{ minWidth: "200px" }} />
                         {orderedUsers.map((u) => (
                             <col key={u.userId} className="min-w-[120px] sm:min-w-[140px]" />
                         ))}
