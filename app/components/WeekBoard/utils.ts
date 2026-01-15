@@ -8,9 +8,36 @@ export function formatOdds(decimalOdds: number, format: OddsFormat): string {
     if (decimalOdds >= 2) return `+${Math.round((decimalOdds - 1) * 100)}`;
     return `${Math.round(-100 / (decimalOdds - 1))}`;
   } else {
-    const numerator = decimalOdds - 1;
-    return `${numerator}/1`;
+    const frac = decimalToFraction(decimalOdds - 1); // numerator/denominator
+    return `${frac.numerator}/${frac.denominator}`;
   }
+}
+
+/**
+ * Convert a decimal number to a fraction
+ * Returns numerator and denominator as integers
+ */
+function decimalToFraction(decimal: number, tolerance = 1.0e-6) {
+  let numerator = 1;
+  let denominator = 1;
+  let error = Math.abs(numerator / denominator - decimal);
+
+  while (error > tolerance) {
+    if (numerator / denominator < decimal) {
+      numerator++;
+    } else {
+      denominator++;
+      numerator = Math.round(decimal * denominator);
+    }
+    error = Math.abs(numerator / denominator - decimal);
+    // Safety to prevent infinite loops
+    if (denominator > 1000) break;
+  }
+
+  // Simplify fraction
+  const gcd = (a: number, b: number): number => b === 0 ? a : gcd(b, a % b);
+  const common = gcd(numerator, denominator);
+  return { numerator: numerator / common, denominator: denominator / common };
 }
 
 /**
