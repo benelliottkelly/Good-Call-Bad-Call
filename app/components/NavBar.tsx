@@ -58,20 +58,23 @@ export default function NavBar() {
                     {currentUser ? (
                         <>
                             <span className="font-semibold mr-2">{currentUser.username}</span>
-                            <NavLink href="/weekboard">Picks</NavLink>
-                            <NavLink href="/leaderboard">Leaderboard</NavLink>
+                            <NavLink href="/weekboard" onClick={() => setMenuOpen(false)}>Picks</NavLink>
+                            <NavLink href="/leaderboard" onClick={() => setMenuOpen(false)}>Leaderboard</NavLink>
 
 
                             {currentUser.isAdmin && (
                                 <>
-                                    <NavLink href="/admin/setup-week">Setup Week</NavLink>
-                                    <NavLink href="/admin/users">Users</NavLink>
-                                    <NavLink href="/admin/scoring">Scoring</NavLink>
+                                    <NavLink href="/admin/setup-week" onClick={() => setMenuOpen(false)}>Setup Week</NavLink>
+                                    <NavLink href="/admin/users" onClick={() => setMenuOpen(false)}>Users</NavLink>
+                                    <NavLink href="/admin/scoring" onClick={() => setMenuOpen(false)}>Scoring</NavLink>
                                 </>
                             )}
 
                             <button
-                                onClick={handleLogout}
+                                onClick={() => {
+                                    handleLogout();
+                                    setMenuOpen(false);
+                                }}
                                 className="bg-red-500 px-2 py-1 rounded hover:bg-red-600"
                             >
                                 Logout
@@ -79,9 +82,9 @@ export default function NavBar() {
                         </>
                     ) : (
                         <>
-                            <NavLink href="/leaderboard">Leaderboard</NavLink>
-                            <NavLink href="/login">Login</NavLink>
-                            <NavLink href="/register">Register</NavLink>
+                            <NavLink href="/leaderboard" onClick={() => setMenuOpen(false)}>Leaderboard</NavLink>
+                            <NavLink href="/login" onClick={() => setMenuOpen(false)}>Login</NavLink>
+                            <NavLink href="/register" onClick={() => setMenuOpen(false)}>Register</NavLink>
                         </>
                     )}
                 </div>
@@ -91,16 +94,16 @@ export default function NavBar() {
                 <div className="absolute top-full right-0 z-50 bg-gray-800 text-white shadow-md rounded mt-1 w-48 md:hidden flex flex-col gap-2 p-2">
                     {currentUser ? (
                         <>
-                            <span className="font-semibold">{currentUser.username}</span>
-                            <NavLink href="/weekboard">Picks</NavLink>
-                            <NavLink href="/leaderboard">Leaderboard</NavLink>
+                            <span className="font-semibold" onClick={() => setMenuOpen(false)}>{currentUser.username}</span>
+                            <NavLink href="/weekboard" onClick={() => setMenuOpen(false)}>Picks</NavLink>
+                            <NavLink href="/leaderboard" onClick={() => setMenuOpen(false)}>Leaderboard</NavLink>
 
 
                             {currentUser.isAdmin && (
                                 <>
-                                    <NavLink href="/admin/setup-week">Setup Week</NavLink>
-                                    <NavLink href="/admin/users">Users</NavLink>
-                                    <NavLink href="/admin/scoring">Scoring</NavLink>
+                                    <NavLink href="/admin/setup-week" onClick={() => setMenuOpen(false)}>Setup Week</NavLink>
+                                    <NavLink href="/admin/users" onClick={() => setMenuOpen(false)}>Users</NavLink>
+                                    <NavLink href="/admin/scoring" onClick={() => setMenuOpen(false)}>Scoring</NavLink>
                                 </>
                             )}
 
